@@ -31,9 +31,14 @@ workers/* (격리된 sub-agent, 영어)
 ## 디렉토리
 
 - `.claude/agents/planner.md`, `commander.md` — 2개 base 에이전트
-- `.claude/agents/workers/` — 사용자 정의 워커 (자동 발견)
+- `.claude/agents/planner-refs.yaml` — planner 참조 문서 매핑 (`docs/structure.md` default)
+- `.claude/agents/workers/` — 사용자 정의 워커 (자동 발견). default: `example-worker`, `docs-keeper`
 - `.hfx/tickets/{active,done,backlog}/` — 티켓 운영 데이터
 - `references/knowledge-pack/` — 외부 레퍼런스 32개 자료
+
+## 참조 문서
+
+`/factory` 첫 호출 시 부트스트랩이 실행되어 `docs/structure.md`(default)와 사용자 지정 문서(coding-rule, backend-rule 등)를 [`planner-refs.yaml`](.claude/agents/planner-refs.yaml)에 매핑합니다. planner는 매 작업 시 `auto-load: always` 항목을 자동 로드, 코드 변경이 끝나면 commander가 docs-keeper를 호출해 `docs/structure.md`를 동기화합니다.
 
 ## 워커 추가
 

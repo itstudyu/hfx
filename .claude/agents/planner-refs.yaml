@@ -1,0 +1,33 @@
+# planner-refs.yaml
+# planner가 매 /factory 실행 시 자동 로드하는 참조 문서 매핑.
+# 부트스트랩(factory 첫 호출 시)에서 생성됨. 수동 편집 가능.
+#
+# auto-load 모드:
+#   always       — 매 실행 시 무조건 Read
+#   conditional  — task 본문에 keywords 매칭될 때만 Read
+#   manual       — 사용자가 명시적으로 요청할 때만
+#
+# defaults: 시스템 기본 (docs-keeper가 관리)
+# user-defined: 사용자가 부트스트랩 또는 수동으로 추가한 항목
+
+version: 1
+bootstrapped: false        # factory 첫 호출 시 true로 변경됨
+
+defaults:
+  - path: docs/structure.md
+    role: project-structure
+    auto-load: always
+    description: "Project directory tree and module responsibilities. Maintained by docs-keeper worker."
+    managed-by: docs-keeper
+
+user-defined: []
+# 예시 (부트스트랩 시 사용자 답변 기반으로 채워짐):
+#   - path: docs/coding-rule.md
+#     role: coding-conventions
+#     auto-load: always
+#     description: "Code style, naming, error handling rules"
+#   - path: docs/backend-rule.md
+#     role: backend-architecture
+#     auto-load: conditional
+#     keywords: [api, database, auth, server, backend]
+#     description: "Backend layer rules"

@@ -32,6 +32,13 @@
 ## 디렉토리
 
 - `.claude/agents/planner.md`, `commander.md` — 2개 base 에이전트
-- `.claude/agents/workers/` — 사용자가 추가하는 워커들
+- `.claude/agents/planner-refs.yaml` — planner 참조 문서 매핑 (default: docs/structure.md)
+- `.claude/agents/workers/` — 사용자 정의 워커. default: `example-worker`, `docs-keeper`
 - `.hfx/tickets/{active,done,backlog}/` — 티켓 운영 데이터
 - `references/knowledge-pack/` — 외부 레퍼런스 (32개 자료, 분기 갱신)
+
+## 참조 문서 (default)
+
+- `docs/structure.md` — 프로젝트 구조 지도 (docs-keeper가 자동 유지)
+- 추가 문서는 `/factory` 첫 호출 시 부트스트랩 인터랙션으로 등록
+- 매핑 파일: `.claude/agents/planner-refs.yaml`
