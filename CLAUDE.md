@@ -1,13 +1,15 @@
-# harness-factory
+# hfx
+
+> Meta-harness for Claude Code. (이전 명: `harness-factory`. 운영 디렉토리 `.hfx/`에서 이름 유래.)
 
 새 기능을 위한 계획을 세우고 워커들에게 위임하는 메타-하네스. Claude Code 위에서 동작.
 
 ## 사용법
 
 ```
-/factory <자연어 요구>      새 작업 시작
-/factory --todos            오늘/내일 할 일
-/harness-upgrade            분기별 표준 갱신
+/hfx <자연어 요구>      새 작업 시작
+/hfx --todos            오늘/내일 할 일
+/hfx-upgrade            분기별 표준 갱신
 ```
 
 ## 핵심 원칙 (반드시 준수)
@@ -40,5 +42,5 @@
 ## 참조 문서 (default)
 
 - `docs/structure.md` — 프로젝트 구조 지도 (docs-keeper가 자동 유지)
-- 추가 문서는 `/factory` 첫 호출 시 부트스트랩 인터랙션으로 등록
+- 추가 문서는 `/hfx` 첫 호출 시 부트스트랩 인터랙션으로 등록
 - 매핑 파일: `.claude/agents/planner-refs.yaml`

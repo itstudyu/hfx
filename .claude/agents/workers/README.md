@@ -39,4 +39,4 @@ maxTurns: 20
 
 워커 추가 후:
 - `.claude/hooks/update-org-chart.sh` 가 자동 실행되어 `.hfx/org-chart.md` 갱신
-- `/factory --todos` 로 워커가 commander에 인식되는지 확인
+- `/hfx --todos` 로 워커가 commander에 인식되는지 확인

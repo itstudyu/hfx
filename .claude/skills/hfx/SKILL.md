@@ -1,19 +1,19 @@
 ---
-name: factory
-description: "harness-factory 메인 진입점. /factory <요구>로 새 작업 시작. planner가 한국어로 100% 유저 합의 후 commander에 인계, commander가 워커들에게 격리된 sub-agent 컨텍스트로 위임. /factory --todos로 오늘/내일 할 일 표시. 첫 호출 시 참조 문서(docs/structure.md 등) 부트스트랩."
+name: hfx
+description: "hfx 메인 진입점. /hfx <요구>로 새 작업 시작. planner가 한국어로 100% 유저 합의 후 commander에 인계, commander가 워커들에게 격리된 sub-agent 컨텍스트로 위임. /hfx --todos로 오늘/내일 할 일 표시. 첫 호출 시 참조 문서(docs/structure.md 등) 부트스트랩."
 when_to_use: 사용자가 새 기능 추가, 버그 수정, 리팩토링, 또는 '오늘/내일 할 일'을 요청할 때
 allowed-tools: Agent, Read, Glob, Grep, Bash, AskUserQuestion
 model: opus
 ---
 
-# /factory — harness-factory 메인 진입점
+# /hfx — hfx 메인 진입점
 
 ## 트리거
 
 ```
-/factory <자연어 요구>      새 작업 시작
-/factory --todos            오늘/내일 할 일 표시
-/factory --refs             참조 문서 매핑 재설정 (보조)
+/hfx <자연어 요구>      새 작업 시작
+/hfx --todos            오늘/내일 할 일 표시
+/hfx --refs             참조 문서 매핑 재설정 (보조)
 ```
 
 ## Step 0. 부트스트랩 (첫 호출 시 자동 감지)
@@ -29,7 +29,7 @@ model: opus
 7. `docs/structure.md`가 없으면 commander → docs-keeper에 "초기 생성" task 위임 (codebase 스캔 후 생성)
 8. "설정 완료" 보고 후 **원래 요구를 planner에 전달**
 
-`/factory --refs`는 부트스트랩을 강제 재실행 (yaml 직접 편집도 가능).
+`/hfx --refs`는 부트스트랩을 강제 재실행 (yaml 직접 편집도 가능).
 
 ## Step 1. Planner 호출
 
@@ -82,7 +82,7 @@ grep "^$(date +%Y-%m-%d)" .hfx/log.md
 commander가 적합 워커 못 찾으면:
 1. 유저 보고: "이 task에 맞는 워커가 없습니다."
 2. 안내: "`workers/example-worker.md` 복사해서 4섹션 수정. 도메인 사례는 `references/knowledge-pack/tier-1-essential/voltagent-subagents.md` (131+ 워커)"
-3. 사용자가 추가 후 `/factory <원래 요구>` 재실행
+3. 사용자가 추가 후 `/hfx <원래 요구>` 재실행
 
 ## 실패 시
 

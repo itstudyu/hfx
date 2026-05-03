@@ -25,7 +25,7 @@ WORKERS=$(ls -1 .claude/agents/workers/*.md 2>/dev/null | grep -vE '(README\.md|
   echo "    Commander[🎯 Commander]"
   i=1
   for w in $WORKERS; do echo "    W$i[⚙️ $w]"; i=$((i+1)); done
-  echo "    User -->|/factory| Planner"
+  echo "    User -->|/hfx| Planner"
   echo "    Planner <-->|확인 질문| User"
   echo "    Planner -->|plan.md| Commander"
   i=1

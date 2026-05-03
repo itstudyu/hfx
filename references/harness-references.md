@@ -2,7 +2,7 @@
 
 이 문서는 v2 [`principles.md`](principles.md)와 [`knowledge-pack/`](knowledge-pack/INDEX.md)이 인용하는 원본 소스의 상세 분석을 담는다.
 각 섹션 번호는 v1 시절 출처 각주 번호 `[n]`을 그대로 유지한다 (knowledge-pack의 tier 분류와 매칭).
-갱신은 `/harness-upgrade` 스킬로 수행한다 (분기 1회 또는 새 표준 발표 시).
+갱신은 `/hfx-upgrade` 스킬로 수행한다 (분기 1회 또는 새 표준 발표 시).
 
 ## ⭐ Knowledge Pack — 외부 레퍼런스 (NEW 2026-05-03)
 
@@ -21,7 +21,7 @@ knowledge-pack/
 └── official-docs/      (12개, Anthropic + Claude Code Docs)
 ```
 
-**`/harness-upgrade`가 진단·patch·검수 시 1차 참조 자료**.
+**`/hfx-upgrade`가 진단·patch·검수 시 1차 참조 자료**.
 
 분기 1회 갱신. 변경은 `LOG.md`에 append-only 기록.
 
@@ -101,7 +101,7 @@ knowledge-pack/
 
 ### 적용 규칙
 - PGE는 Evaluator-Optimizer 패턴에 해당 (Generator ↔ Evaluator 루프)
-- harness-factory 스킬은 Orchestrator, 3개 에이전트는 Workers
+- hfx 스킬은 Orchestrator, 3개 에이전트는 Workers
 
 ---
 
@@ -490,7 +490,7 @@ Explore → Plan → Code → Commit (4단계)
 **확인 일자**: 2026-04-18 (WebFetch)
 - ★ 2.6k / Apache-2.0 / Claude Code 플러그인 형태 meta-skill
 - README가 정형화한 **6가지 아키텍처 패턴**: Pipeline, Fan-out/Fan-in, Expert Pool, Producer-Reviewer, Supervisor, Hierarchical Delegation
-- 적용 시사점: harness-factory의 PGE는 Producer-Reviewer 변형으로 매핑 가능
+- 적용 시사점: hfx의 PGE는 Producer-Reviewer 변형으로 매핑 가능
 
 > 본 repo의 A/B 수치(49.5→79.3) 등 성능 주장은 **외부 재현 없음** — rules에는 인용하지 않는다.
 
@@ -502,7 +502,7 @@ Explore → Plan → Code → Commit (4단계)
 
 ### 검증 정책
 - rules로 인용 시 **commit SHA + 직접 인용한 줄 번호** 기록
-- archived / 90일 무활동 → 다음 `/harness-upgrade` 실행 시 제거
+- archived / 90일 무활동 → 다음 `/hfx-upgrade` 실행 시 제거
 
 ---
 

@@ -1,16 +1,16 @@
 ---
-name: harness-upgrade
-description: "harness-factory 자체를 최신 표준으로 업그레이드. references/knowledge-pack의 32개 자료 분기 갱신, 변경된 Anthropic 표준 반영. 90일 초과 시 자동 제안."
+name: hfx-upgrade
+description: "hfx 자체를 최신 표준으로 업그레이드. references/knowledge-pack의 32개 자료 분기 갱신, 변경된 Anthropic 표준 반영. 90일 초과 시 자동 제안."
 when_to_use: 분기 1회, 또는 Anthropic이 새 frontmatter 필드/패턴/모델 발표 시, 또는 사용자가 명시적으로 요청 시
 allowed-tools: Read, Glob, Grep, Bash, WebFetch, Edit, Write
 model: opus
 ---
 
-# /harness-upgrade
+# /hfx-upgrade
 
 ## 트리거 조건
 
-1. 사용자가 명시적으로 `/harness-upgrade` 호출
+1. 사용자가 명시적으로 `/hfx-upgrade` 호출
 2. `references/knowledge-pack/LOG.md`의 마지막 갱신이 90일 초과
 3. Anthropic blog/docs에 새 항목 (수동 모니터링)
 
@@ -59,7 +59,7 @@ LOG.md에 새 entry append:
 
 사용자에게 보고:
 ```
-다음 변경이 harness-factory에 영향:
+다음 변경이 hfx에 영향:
 1. <변경 내용>
 2. 권장 액션: <적용 방법>
 적용할까요?

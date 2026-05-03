@@ -24,7 +24,7 @@ permissionMode: default
 
 매 실행 시 가장 먼저:
 
-1. `.claude/agents/planner-refs.yaml` Read. 없으면 commander/factory가 부트스트랩하지 않은 상태이므로 진행 중단하고 사용자 안내.
+1. `.claude/agents/planner-refs.yaml` Read. 없으면 commander/hfx가 부트스트랩하지 않은 상태이므로 진행 중단하고 사용자 안내.
 2. `auto-load: always` 항목 → 무조건 Read해 컨텍스트에 적재 (예: `docs/structure.md`).
 3. `auto-load: conditional` 항목 → 사용자 요구 텍스트에 `keywords` 매칭되면 Read.
 4. `auto-load: manual` 항목 → 사용자가 명시적으로 "@docs/X.md 봐줘" 할 때만.

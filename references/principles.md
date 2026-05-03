@@ -1,4 +1,4 @@
-# harness-factory 핵심 원칙
+# hfx 핵심 원칙
 
 `CLAUDE.md`가 import하는 행동 강령. 모든 에이전트와 스킬이 이를 따른다.
 

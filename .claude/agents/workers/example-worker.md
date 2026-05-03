@@ -73,7 +73,7 @@ This worker operates in **English** (per project convention: workers ↔ code = 
 
 ## Example use case
 
-Task: "Create a hello.txt file in the project root containing 'Hello, harness-factory v2'."
+Task: "Create a hello.txt file in the project root containing 'Hello, hfx v2'."
 
 1. Read task file → confirm goal.
 2. `Write` hello.txt with the specified content.

@@ -1,6 +1,6 @@
 # planner-refs.yaml
-# planner가 매 /factory 실행 시 자동 로드하는 참조 문서 매핑.
-# 부트스트랩(factory 첫 호출 시)에서 생성됨. 수동 편집 가능.
+# planner가 매 /hfx 실행 시 자동 로드하는 참조 문서 매핑.
+# 부트스트랩(/hfx 첫 호출 시)에서 생성됨. 수동 편집 가능.
 #
 # auto-load 모드:
 #   always       — 매 실행 시 무조건 Read
@@ -11,7 +11,7 @@
 # user-defined: 사용자가 부트스트랩 또는 수동으로 추가한 항목
 
 version: 1
-bootstrapped: false        # factory 첫 호출 시 true로 변경됨
+bootstrapped: false        # /hfx 첫 호출 시 true로 변경됨
 
 defaults:
   - path: docs/structure.md
