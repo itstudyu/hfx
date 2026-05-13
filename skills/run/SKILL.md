@@ -26,9 +26,12 @@ Set `TICKET_DIR = ${CLAUDE_PROJECT_DIR}/.harness/tickets/active/<ticket-id>`.
 
 ## Step 2 — hard gate verification
 
-```!
-bash "${CLAUDE_PLUGIN_ROOT}/scripts/verify-approval.sh" "${CLAUDE_PROJECT_DIR}/.harness/tickets/active/<ticket-id>"
-```
+Use the `Bash` tool (do NOT use a ` ```! ` injection block — the
+ticket-id is dynamic) to run `verify-approval.sh`, substituting the
+actual ticket-id you picked in Step 1:
+
+    bash "${CLAUDE_PLUGIN_ROOT}/scripts/verify-approval.sh" \
+         "${CLAUDE_PROJECT_DIR}/.harness/tickets/active/<actual-ticket-id-here>"
 
 If exit ≠ 0: stop immediately and surface the script's error message
 verbatim. The script tells the user exactly how to recover (re-approve,
@@ -157,9 +160,13 @@ Show results.md to the user. Use `AskUserQuestion`:
 | Accept | Results look good — accept and move ticket to done/?     | [a] accept (Recommended) / [e] edit results.md / [r] keep in active for now |
 
 - `[a] accept`:
-   ```!
-   bash "${CLAUDE_PLUGIN_ROOT}/scripts/move-ticket.sh" "${CLAUDE_PROJECT_DIR}/.harness" "<ticket-id>" done
-   ```
+   Use the `Bash` tool (do NOT use a ` ```! ` injection block — the
+   ticket-id is dynamic) to move the ticket, substituting the actual
+   ticket-id from Step 1:
+
+       bash "${CLAUDE_PLUGIN_ROOT}/scripts/move-ticket.sh" \
+            "${CLAUDE_PROJECT_DIR}/.harness" "<actual-ticket-id-here>" done
+
    Then proceed to Step 7.
 - `[e]`: tell user the file path, stop.
 - `[r]`: stop.

@@ -129,11 +129,17 @@ Use `AskUserQuestion` (single):
 Generate `ticket_id` as `<YYYY-MM-DD>-<kebab-slug-of-title>`. Use today's
 date in the user's local zone if known; otherwise UTC. Slug ≤ 40 chars.
 
-Set `TICKET_DIR = ${CLAUDE_PROJECT_DIR}/.harness/tickets/active/<ticket-id>`.
+Set `TICKET_DIR = ${CLAUDE_PROJECT_DIR}/.harness/tickets/active/<ticket-id>`,
+substituting the actual generated ticket-id.
 
-```!
-mkdir -p "${CLAUDE_PROJECT_DIR}/.harness/tickets/active/<ticket-id>"
-```
+Use the `Bash` tool to create the directory, substituting the actual
+ticket-id you generated above:
+
+    mkdir -p "${CLAUDE_PROJECT_DIR}/.harness/tickets/active/<actual-ticket-id-here>"
+
+(Do NOT use a ` ```! ` shell-injection block for this step — the
+ticket-id is dynamic and a literal `<ticket-id>` placeholder would be
+sent to the shell unchanged.)
 
 `Read` the two templates:
 - `${CLAUDE_PLUGIN_ROOT}/templates/plan.md.tmpl`
@@ -159,16 +165,20 @@ Show the user the rendered file paths and the **full text** of `plan.md`
 | Plan   | Plan 파일들 그대로 승인할까요?              | [a] approve — fill approved_at + content_sha (Recommended) / [e] edit plan files / [q] I have a question |
 
 - `[a]` →
-   1. Compute sha:
-      ```!
-      bash "${CLAUDE_PLUGIN_ROOT}/scripts/compute-sha.sh" "${CLAUDE_PROJECT_DIR}/.harness/tickets/active/<ticket-id>"
-      ```
+   1. Use the `Bash` tool (do NOT use a ` ```! ` injection block —
+      the ticket-id is dynamic) to compute the sha, substituting the
+      actual ticket-id you generated in Step 6:
+
+          bash "${CLAUDE_PLUGIN_ROOT}/scripts/compute-sha.sh" \
+               "${CLAUDE_PROJECT_DIR}/.harness/tickets/active/<actual-ticket-id-here>"
+
+      The script prints a 64-char hex digest on stdout. Capture it.
    2. `Edit` `<TICKET_DIR>/plan.md` frontmatter:
       - `status: ready`
       - `approved_at: <current ISO timestamp>`
-      - `content_sha: <sha from script>`
+      - `content_sha: <sha from step 1>`
    3. Print:
-      > Approved. Next: `/hfx:run <ticket-id>`.
+      > Approved. Next: `/hfx:run <actual-ticket-id>`.
 - `[e]` → ask which file/section. Use `Edit` to update. Then loop back
   to Step 7 (sha will be recomputed on the next [a]).
 - `[q]` → answer, then re-present Step 7.
