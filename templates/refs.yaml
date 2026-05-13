@@ -1,0 +1,23 @@
+# refs.yaml — reference document index for the planner.
+#
+# The planner reads `always:` entries every time /hfx:plan runs.
+# `conditional:` entries are read when the user's request matches any keyword.
+# `manual:` entries are read only when the user names them in /hfx:plan args.
+#
+# Paths are relative to the project root (where .harness/ lives).
+# Add and remove entries freely — this is a per-project file.
+
+always:
+  - .harness/planner-policy.md
+  - .harness/memory/INDEX.md
+
+conditional:
+  # Examples. Replace with paths that exist in your project.
+  - path: docs/architecture.md
+    keywords: [architecture, design, system, structure]
+  - path: docs/api.md
+    keywords: [api, endpoint, rest, http]
+  - path: README.md
+    keywords: [overview, project, setup, install]
+
+manual: []

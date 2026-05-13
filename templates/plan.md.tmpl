@@ -1,0 +1,57 @@
+---
+ticket-id: __TICKET_ID__
+title: __TITLE__
+status: draft
+requested-by: __USER__
+created: __ISO_TIMESTAMP__
+approved_at: null
+content_sha: null
+dispatch_graph:
+  steps:
+    - id: __STEP_ID__
+      worker: __WORKER_NAME__
+      parallel_safe: true
+      depends_on: []
+      plan_file: plan.__WORKER_NAME__.md
+---
+
+## Context
+
+<Why this work is needed. State the user-visible problem and the intended outcome.
+Keep to 3–5 sentences.>
+
+## Goal
+
+<One verifiable outcome. "When X is done, Y will be observable by Z."
+Avoid vague verbs like "improve", "clean up", "refactor".>
+
+## Constraints
+
+- Out of scope:
+  - <Something a reader might expect to be in scope but is explicitly not.>
+
+- Technical:
+  - <Hard constraints — library version, API contract, etc.>
+
+## Dispatch Graph
+
+```mermaid
+graph TD
+  __MERMAID_NODES__
+```
+
+Steps:
+- `__STEP_ID__` → `__WORKER_NAME__` — <one-line task>
+
+## Verification
+
+- [ ] <Checkbox 1: maps to Goal, verifiable by a command or file inspection.>
+- [ ] <Checkbox 2.>
+
+## Artifacts
+
+Files expected to change:
+- `<path/to/file>`
+
+New files:
+- `<path/to/new-file>`

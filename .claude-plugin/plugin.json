@@ -1,0 +1,20 @@
+{
+  "$schema": "https://json.schemastore.org/claude-code-plugin-manifest.json",
+  "name": "hfx",
+  "version": "0.0.1",
+  "description": "Planner-led harness for Claude Code: the main session is the planner that grills the user, then dispatches workers in fresh sub-agent contexts.",
+  "author": {
+    "name": "itstudyu",
+    "url": "https://github.com/itstudyu"
+  },
+  "homepage": "https://github.com/itstudyu/hfx",
+  "repository": "https://github.com/itstudyu/hfx",
+  "license": "MIT",
+  "keywords": [
+    "harness",
+    "planner",
+    "sub-agents",
+    "context-isolation",
+    "meta-agent"
+  ]
+}
