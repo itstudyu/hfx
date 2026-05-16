@@ -10,7 +10,7 @@
       "name": "hfx",
       "source": "./",
       "description": "Planner-led harness for Claude Code: the main session is the planner that grills the user, drafts a sha-locked plan, then dispatches workers in fresh sub-agent contexts. Context isolation, hard approval gate, no self-evaluation.",
-      "version": "0.0.5.1"
+      "version": "0.0.5.2"
     }
   ]
 }

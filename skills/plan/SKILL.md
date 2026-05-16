@@ -263,14 +263,16 @@ Show the user the rendered file paths and the **full text** of `plan.md`
    3. Print:
       > Approved (ticket `<actual-ticket-id>`, sha `<first-8-chars>`).
    4. Proceed directly to Step 8 (handoff). Do **not** print a
-      "Next: `/hfx:run`" line here — Step 8 asks the user instead.
+      "Next: `/hfx:run`" line here — Step 8 prints it as part of the
+      ticket summary.
 - `[e]` → ask which file/section. Use `Edit` to update. Then loop back
   to Step 7 (sha will be recomputed on the next [a]).
 - `[q]` → answer, then re-present Step 7.
 
 ## Step 8 — handoff
 
-First print the ticket summary:
+Print the ticket summary and end with a single `Next:` line. **Do not
+ask another AskUserQuestion** — the plan gate already concluded.
 
 ```
 ## Ticket created
@@ -279,35 +281,18 @@ First print the ticket summary:
 - files:
   - .harness/tickets/active/<ticket-id>/plan.md
   - .harness/tickets/active/<ticket-id>/plan.<worker>.md  (× N)
+
+Next: `/hfx:run <actual-ticket-id>`
 ```
 
-Then ask the user whether to dispatch now via **one** `AskUserQuestion`
-call:
+Then STOP.
 
-| header | question                                           | options |
-|--------|----------------------------------------------------|---------|
-| Run    | 지금 `/hfx:run <ticket-id>` 를 실행할까요?         | [y] yes — `/hfx:run` 안내만 출력 (Recommended) / [n] no — 나중에 직접 실행 |
-
-- `[y]` → print exactly:
-  > 실행하려면 다음을 직접 입력하세요: `/hfx:run <actual-ticket-id>`
-  >
-  > (Skill은 다른 skill을 자동 호출할 수 없습니다 — `/hfx:run` 은
-  > user-invoked 전용입니다.)
-  Then STOP.
-- `[n]` → print:
-  > 준비 완료. 나중에 `/hfx:run <actual-ticket-id>` 로 실행하세요.
-  Then STOP.
-
-**Why a question instead of a one-line "Next:" hint:** the prior
-behavior was to print `Next: /hfx:run <id>` and stop, which left users
-unsure whether `/hfx:plan` was actually finished or expecting more
-input. Asking explicitly closes the loop and lets the user choose to
-defer (e.g., to inspect plan files first) without scrolling back.
-
-**Why we cannot auto-dispatch:** `/hfx:run` has
-`disable-model-invocation: true` and runs only when the user types the
-slash command themselves. Even on `[y]`, this skill only emits the
-exact command for the user to paste.
+**Why no question here:** earlier versions asked "지금 /hfx:run
+실행할까요? [y]/[n]" but `[y]` only prints the exact command for the
+user to paste — `/hfx:run` is `disable-model-invocation: true` and
+cannot be auto-invoked. The question added a click without adding
+value: the user types `/hfx:run` either way. A bare `Next:` line is
+faster.
 
 ## Hard rules
 
