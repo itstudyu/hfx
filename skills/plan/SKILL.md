@@ -52,19 +52,27 @@ After loading INDEX.md, do a deterministic keyword match between
 `$ARGUMENTS` (lowercased) and each INDEX line:
 
 ```
-keywords = lowercase($ARGUMENTS).split()
+STOP_WORDS = {a, an, and, the, to, of, in, on, for, with, fix, add,
+              update, change, make, do, use, new, also, please}
+keywords = lowercase($ARGUMENTS).split() - STOP_WORDS
 matches  = []
 for line in INDEX.md:
   hook = lowercase(line)
   hits = count(k in hook for k in keywords)
   if hits >= 1:
-    matches.append((hits, theme_file_from_line))
-top_3 = matches.sort_by(hits desc).take(3)
+    matches.append((hits, length(hook), theme_file_from_line))
+# tie-break: shorter index hook = narrower theme = better match.
+top_3 = matches.sort_by(hits desc, length asc).take(3)
 ```
 
 `Read` each of the top 1–3 theme files (parallel block). Use the
 contents during grilling so the planner doesn't re-ask things already
-learned. If 0 matches → skip; the index alone is enough.
+learned, and **quote the relevant line back to the user** when a memory
+actually changes a question or assumption — silent reads are wasted
+reads.
+
+If `keywords` is empty after stop-word removal, OR 0 matches → skip;
+the index alone is enough.
 
 ## Step 2 — discover available workers (union: project-local + plugin-shipped)
 

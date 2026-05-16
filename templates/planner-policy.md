@@ -182,21 +182,30 @@ INDEX line shares ≥1 lowercase keyword with `$ARGUMENTS`. This is
 deterministic keyword match, not LLM judgment. Pseudocode:
 
 ```
-keywords = lowercase($ARGUMENTS).split()
+STOP_WORDS = {a, an, and, the, to, of, in, on, for, with, fix, add,
+              update, change, make, do, use, new, also, please}
+keywords = lowercase($ARGUMENTS).split() - STOP_WORDS
 matches  = []
 for line in INDEX.md:
   hook = lowercase(line)
   hits = count(k in hook for k in keywords)
   if hits >= 1:
-    matches.append((hits, line.path))
-top_3 = matches.sort_by(hits desc).take(3)
+    matches.append((hits, length(hook), line.path))
+# sort: most hits first; on a tie, shorter hook wins
+# (a shorter index line is usually a narrower, more specific theme).
+top_3 = matches.sort_by(hits desc, length asc).take(3)
 for path in top_3:
   Read(`.harness/memory/<path>`)
 ```
 
-If 0 matches → skip; memory adds no value here. The point is to surface
-prior learnings *during grilling*, so the planner doesn't ask the user
-to repeat decisions already recorded.
+If keywords list is empty after stop-word removal, OR 0 matches → skip;
+memory adds no value here. The point is to surface prior learnings
+*during grilling*, so the planner doesn't ask the user to repeat
+decisions already recorded.
+
+Loaded memory must visibly affect grilling — quote the relevant line
+back to the user when it changes a question or assumption. Silent reads
+are wasted reads.
 
 ### Write side — propose learnings after /hfx:run succeeds
 
