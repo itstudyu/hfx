@@ -243,6 +243,38 @@ inspection.
 
 ---
 
+## Cross-worker contract (v0.0.5.8+)
+
+When a ticket dispatches **two or more workers that share a runtime
+path** (HTTP request, queue message, file handoff, IPC, shared
+in-process state), the planner is required to declare a one-line
+contract in `plan.md` `## Constraints > Technical:` that pins the
+wire shape and both sides' obligation. For example:
+
+```
+frontend POSTs {email: string, password: string} to /api/auth/login;
+backend re-validates password.length === 10 server-side, returns 400
+{error: "PASSWORD_LENGTH"} on mismatch
+```
+
+Why: workers run in isolated worktrees and cannot see each other's
+decisions. Without an explicit contract, frontend may POST
+`{username, pw}` while backend expects `{email, password}` — both
+workers pass their own checks but integration breaks. The contract
+makes the wire shape part of the locked plan, so both workers agree
+before any code is written.
+
+The `spec-reviewer` (when `review_mode` is on) enforces this contract
+on top of the per-task list: a producer that sends a different key, or
+a consumer that skips the declared validation, is `SPEC_FAIL`
+regardless of whether all tasks are MET.
+
+Single-worker tickets and multi-worker tickets where workers don't
+share a runtime path (e.g., `backend` + `docupdater` editing unrelated
+files) are exempt.
+
+---
+
 ## Reviewer workers (v0.0.5+)
 
 Three read-only reviewer workers (`spec-reviewer`, `quality-reviewer`,
