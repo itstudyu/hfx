@@ -110,12 +110,30 @@ In one block of tool calls (parallel where independent):
    `${CLAUDE_PLUGIN_ROOT}/agents/helpers/code-analyst.md` to
    `${CLAUDE_PROJECT_DIR}/.claude/agents/code-analyst.md`.
 
-## Step 4 — confirm
+## Step 4 — confirm + restart notice
 
 Print a tree of what was created (use `Bash` `find .harness .claude/agents -maxdepth 3`)
-and end with:
+and end with the following message **verbatim**, then STOP (do not call
+any further tools, do not offer to run `/hfx:plan` yourself):
 
-> Ready. Next: `/hfx:plan "<what you want to build>"`.
+> ✅ `/hfx:init` complete.
+>
+> ⚠️  **Restart Claude Code before running `/hfx:plan` or `/hfx:run`.**
+>
+> Claude Code loads `.claude/agents/` only at session start. The workers
+> just written (`backend`, `frontend`, `docupdater`, `code-analyst` —
+> whichever you selected) are **not registered in this session**, so
+> dispatching them by bare name will fail with `Agent type '<name>' not
+> found`.
+>
+> Steps:
+>   1. Exit this session (Ctrl+D or `/exit`).
+>   2. Start a new session in this directory (`claude`).
+>   3. Then: `/hfx:plan "<what you want to build>"`.
+>
+> (If you skip the restart, `/hfx:run` will still work via the plugin's
+> `hfx:workers:<name>` fallback resolver, but `/hfx:edit-worker` and any
+> per-project worker customizations will not take effect until restart.)
 
 ## Failure handling
 
