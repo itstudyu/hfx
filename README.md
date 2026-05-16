@@ -211,17 +211,21 @@ When `/hfx:run` dispatches:
 
 ```text
 Agent(
-  subagent_type="backend",
+  subagent_type="backend",          # if .claude/agents/backend.md exists
+  # OR  "hfx:workers:backend"       # plugin-only fallback (no /hfx:init)
   prompt = <plan.md full text> +
            <plan.backend.md full text> +
            <ticket dir absolute path>
 )
 ```
 
-(`subagent_type` uses the bare worker name — no `hfx:` prefix — because
-runtime workers live at `.claude/agents/<name>.md` after `/hfx:init`.
-The plugin-namespaced agents under `${CLAUDE_PLUGIN_ROOT}/agents/`
-are seed templates, not the dispatched runtime agents.)
+The dispatcher resolves `subagent_type` per worker, with project-local
+copies winning: bare `<name>` if `.claude/agents/<name>.md` exists
+(written by `/hfx:init` and editable via `/hfx:edit-worker`), otherwise
+the plugin-namespaced `hfx:workers:<name>` (or `hfx:helpers:<name>`)
+shipped under `${CLAUDE_PLUGIN_ROOT}/agents/`. This means the plugin
+works end-to-end even before `/hfx:init` runs — `/hfx:init` is what
+unlocks per-project worker customization on top of that fallback.
 
 The worker reads both plan files from disk (authoritative — the prompt
 is a summary), implements the per-worker tasks, runs the verification

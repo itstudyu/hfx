@@ -42,10 +42,11 @@ Decisions that change scope, cost, or risk. Always ask. Examples:
 - Always include your recommended answer as the first option with `(Recommended)`.
 - If a question can be answered by reading code, read the code instead of asking.
 - For large code exploration that would flood your context, dispatch
-  `Agent(subagent_type="code-analyst", ...)` with a specific question
-  and use only the returned summary. (`code-analyst` is installed at
-  `.claude/agents/code-analyst.md` by `/hfx:init`; use the bare name,
-  no plugin prefix.)
+  the code-analyst helper with a specific question and use only the
+  returned summary. The `/hfx:plan` skill resolves the dispatch name
+  automatically: bare `code-analyst` if `/hfx:init` installed it at
+  `.claude/agents/code-analyst.md`, otherwise the plugin-namespaced
+  `hfx:helpers:code-analyst`.
 - For external library/API docs you are unsure about, use `WebFetch` /
   `WebSearch` / Context7 MCP yourself — do not delegate.
 

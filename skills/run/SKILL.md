@@ -36,30 +36,56 @@ If exit ≠ 0: stop immediately and surface the script's error message
 verbatim. The script tells the user exactly how to recover (re-approve,
 sha mismatch, etc.). Do not bypass.
 
-## Step 2b — installed-workers check
+## Step 2b — discover available workers (union: project-local + plugin-shipped)
+
+Build a discovery map from the union of two sources:
 
 ```!
-ls "${CLAUDE_PROJECT_DIR}/.claude/agents/" 2>/dev/null | sed 's/\.md$//' | sort
+{
+  ls "${CLAUDE_PROJECT_DIR}/.claude/agents/" 2>/dev/null \
+    | sed -n 's/\.md$//p' | awk 'NF{print "local:"$0}'
+  ls "${CLAUDE_PLUGIN_ROOT}/agents/workers/" 2>/dev/null \
+    | sed -n 's/\.md$//p' | awk 'NF{print "plugin-worker:"$0}'
+  ls "${CLAUDE_PLUGIN_ROOT}/agents/helpers/" 2>/dev/null \
+    | sed -n 's/\.md$//p' | awk 'NF{print "plugin-helper:"$0}'
+} | sort -u
 ```
 
-Capture this list. It is the canonical set of workers/helpers this
-project has installed and can dispatch.
+Capture this map. For each worker/helper name, note which source(s)
+provide it, and resolve a single `subagent_type` per name with this
+precedence (project-local always wins):
 
-If the listing is empty, abort with:
-> No agents installed in `.claude/agents/`. Run `/hfx:init` first.
+| Source(s) present                  | `subagent_type` to use         |
+|-----------------------------------|---------------------------------|
+| `local:<name>` (with or without plugin) | `<name>` (bare)            |
+| only `plugin-worker:<name>`       | `hfx:workers:<name>`            |
+| only `plugin-helper:<name>`       | `hfx:helpers:<name>`            |
+
+Why both sources: `/hfx:init` copies plugin seeds into
+`.claude/agents/` so users can edit per-project (model, tools, body).
+But the plugin must also work end-to-end without `/hfx:init` —
+in that case Claude Code only exposes the plugin agents under their
+namespaced names (`hfx:workers:<name>`, `hfx:helpers:<name>`), and
+the dispatcher must call them by that namespaced form.
+
+If both lists are empty, abort with:
+> No agents available. Either run `/hfx:init` to install
+> project-local workers, or verify the plugin loaded correctly
+> (`/plugin` should show hfx).
 
 ## Step 3 — parse dispatch_graph
 
 `Read` `<TICKET_DIR>/plan.md` frontmatter. Extract `dispatch_graph.steps`:
 each step has `id`, `worker`, `parallel_safe`, `depends_on`, `plan_file`.
 
-**Validate every step.worker against the installed-workers list from
-Step 2b.** If any step references a worker that is not installed,
-abort with:
-> Plan references uninstalled worker `<name>`. Either install it
-> (re-run `/hfx:init` or copy `${CLAUDE_PLUGIN_ROOT}/agents/workers/<name>.md`
-> to `.claude/agents/<name>.md`), or edit `plan.md` to remove the step
-> (and re-approve via `/hfx:plan`).
+**Validate every step.worker against the discovery map from Step 2b.**
+A worker is valid if it appears as either `local:<name>`,
+`plugin-worker:<name>`, or `plugin-helper:<name>`. If any step
+references a worker that is not in the map, abort with:
+> Plan references unavailable worker `<name>`. Either install it
+> (run `/hfx:init`, or copy `${CLAUDE_PLUGIN_ROOT}/agents/workers/<name>.md`
+> to `.claude/agents/<name>.md`), or edit `plan.md` to remove the
+> step (and re-approve via `/hfx:plan`).
 
 Build levels by topological sort:
 - Level 0 = steps with empty `depends_on`.
@@ -78,13 +104,16 @@ For each level in order:
 
 1. For each step in the level, read `<TICKET_DIR>/<step.plan_file>`.
 2. **Parallel block**: in **one assistant message**, emit one
-   `Agent` tool call per parallel-launchable step. Use the bare worker
-   name (no `hfx:` prefix) — the worker file lives at
-   `.claude/agents/<worker>.md` and is the user-editable runtime agent
-   that `/hfx:init` and `/hfx:edit-worker` operate on:
+   `Agent` tool call per parallel-launchable step. Resolve the
+   `subagent_type` from Step 2b's discovery map per the precedence
+   table — bare `<step.worker>` if a project-local copy exists at
+   `.claude/agents/<step.worker>.md` (the user-editable runtime agent
+   that `/hfx:init` and `/hfx:edit-worker` operate on), otherwise the
+   plugin-namespaced form (`hfx:workers:<step.worker>` or
+   `hfx:helpers:<step.worker>`):
    ```
    Agent(
-     subagent_type="<step.worker>",
+     subagent_type="<resolved name>",
      description="<step.id> — <one-line>",
      prompt="""
 You are working on ticket <ticket-id>.

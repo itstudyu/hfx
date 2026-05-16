@@ -72,11 +72,14 @@ In one block of tool calls (parallel where independent):
    ```
 
    **Why `.claude/agents/`:** Claude Code's project-level subagent
-   directory. The dispatcher in `/hfx:run` invokes workers by their
-   bare `name:` (no plugin namespace prefix), so workers must live at
-   the project-subagent path to be discovered at runtime. The plugin-shipped
-   `${CLAUDE_PLUGIN_ROOT}/agents/workers/` are *seed templates*, not the
-   runtime agents.
+   directory. Agents placed here are dispatchable by bare `name:`
+   (no namespace prefix) and become editable per-project copies that
+   `/hfx:edit-worker` can modify (model, tools, body). The plugin-shipped
+   `${CLAUDE_PLUGIN_ROOT}/agents/workers/` are seed templates that
+   `/hfx:run` can also dispatch directly under their namespaced names
+   (`hfx:workers:<name>`) when no project-local copy exists — so the
+   plugin still works without `/hfx:init`. Running `/hfx:init` is
+   what gives you per-project customization on top of that fallback.
 
 2. Read `${CLAUDE_PLUGIN_ROOT}/templates/planner-policy.md`. If user
    picked "default template", `Write` it verbatim to
@@ -98,9 +101,10 @@ In one block of tool calls (parallel where independent):
 5. For each selected worker, read
    `${CLAUDE_PLUGIN_ROOT}/agents/workers/<worker>.md` and `Write` to
    `${CLAUDE_PROJECT_DIR}/.claude/agents/<worker>.md`, overriding the
-   `model:` frontmatter field with the user's choice from Step 2. This is
-   the file Claude Code will load at runtime when the dispatcher calls
-   `Agent(subagent_type="<worker>", ...)`.
+   `model:` frontmatter field with the user's choice from Step 2. With
+   this project-local copy in place, `/hfx:run` will dispatch the worker
+   by bare name (`Agent(subagent_type="<worker>", ...)`) and
+   `/hfx:edit-worker` can modify it without touching the plugin seed.
 
 6. If code-analyst was selected, copy
    `${CLAUDE_PLUGIN_ROOT}/agents/helpers/code-analyst.md` to

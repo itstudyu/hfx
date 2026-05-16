@@ -46,16 +46,36 @@ Then parse `refs.yaml`:
 
 If any referenced path is missing, note it but do not abort.
 
-## Step 2 — listed installed workers
+## Step 2 — discover available workers (union: project-local + plugin-shipped)
 
 ```!
-ls "${CLAUDE_PROJECT_DIR}/.claude/agents/" 2>/dev/null | sed 's/\.md$//'
+{
+  ls "${CLAUDE_PROJECT_DIR}/.claude/agents/" 2>/dev/null \
+    | sed -n 's/\.md$//p' | awk 'NF{print "local:"$0}'
+  ls "${CLAUDE_PLUGIN_ROOT}/agents/workers/" 2>/dev/null \
+    | sed -n 's/\.md$//p' | awk 'NF{print "plugin-worker:"$0}'
+  ls "${CLAUDE_PLUGIN_ROOT}/agents/helpers/" 2>/dev/null \
+    | sed -n 's/\.md$//p' | awk 'NF{print "plugin-helper:"$0}'
+} | sort -u
 ```
 
-Remember the list — these are the runtime workers (Claude Code's
-project-level subagents). The dispatch graph can only reference names
-that appear here. Note `code-analyst` may also appear; treat it as a
-helper, not a worker — never put it in `dispatch_graph`.
+Build a discovery map keyed by name. The dispatch graph can only
+reference names that appear in this map. Treat `code-analyst` (and
+anything else under `agents/helpers/`) as a helper, not a worker —
+never put helpers in `dispatch_graph`.
+
+`/hfx:run` will resolve each name to a `subagent_type` at dispatch
+time using this precedence (project-local always wins):
+
+| Source(s) present                  | `subagent_type`             |
+|------------------------------------|------------------------------|
+| `local:<name>`                     | `<name>` (bare)              |
+| only `plugin-worker:<name>`        | `hfx:workers:<name>`         |
+| only `plugin-helper:<name>`        | `hfx:helpers:<name>`         |
+
+You don't need to encode the resolution into `plan.md` — record only
+the bare worker name in `dispatch_graph.steps[].worker`. The
+dispatcher does the resolution.
 
 ## Step 3 — initial intake (no questions yet)
 
@@ -80,14 +100,16 @@ Between questions:
 - If reading would flood your context (you'd open more than ~5 files):
   ```
   Agent(
-    subagent_type="code-analyst",
+    subagent_type="<resolved code-analyst name>",
     description="<one-line scope>",
     prompt="<a single specific question + scope hint>"
   )
   ```
-  Use the bare name — `/hfx:init` installs code-analyst at
-  `.claude/agents/code-analyst.md`, not under the plugin namespace.
-  Use the returned summary; do not re-read.
+  Resolve `<resolved code-analyst name>` from Step 2's discovery map:
+  use bare `code-analyst` if a project-local copy exists at
+  `.claude/agents/code-analyst.md` (installed by `/hfx:init`),
+  otherwise use `hfx:helpers:code-analyst` (plugin-shipped). Use the
+  returned summary; do not re-read.
 - For external library/API docs: use `WebFetch` / `WebSearch` directly.
 
 Stop grilling when:
@@ -203,6 +225,9 @@ Run `/hfx:run <ticket-id>` to dispatch workers.
 - **Never** dispatch a worker from this skill — that is `/hfx:run`'s job.
 - **Never** modify files outside `<TICKET_DIR>` and (with user consent)
   `.harness/memory/*` after Step 8 ends.
-- Plan files must reference only installed workers (Step 2). If the sync
-  needs a worker that is not installed, stop and tell the user to install
-  it via `/hfx:init` (or copy the file from `${CLAUDE_PLUGIN_ROOT}/agents/workers/`).
+- Plan files must reference only workers that appear in Step 2's
+  discovery map (project-local **or** plugin-shipped). If the sync
+  needs a worker that is in neither, stop and tell the user to install
+  it via `/hfx:init`, or to drop a custom worker file at
+  `${CLAUDE_PLUGIN_ROOT}/agents/workers/<name>.md` /
+  `.claude/agents/<name>.md` and re-run `/hfx:plan`.
