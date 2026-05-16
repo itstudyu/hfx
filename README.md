@@ -134,9 +134,10 @@ hfx/                                  ← plugin (installed by /plugin install)
 │   └── helpers/code-analyst.md
 ├── templates/{planner-policy.md, refs.yaml, memory-INDEX.md,
 │              plan.md.tmpl, plan.worker.md.tmpl}
-├── scripts/{compute-sha.sh, verify-approval.sh, move-ticket.sh}
+├── scripts/{compute-sha.sh, verify-approval.sh, move-ticket.sh,
+│            handoff-worktree.sh}
 ├── docs/reviews/                      ← seven rounds of self-review records
-└── README.md, LICENSE
+└── README.md, CHANGELOG.md, LICENSE
 ```
 
 In your **project** (created by `/hfx:init`):
@@ -371,6 +372,8 @@ seven rounds of self-review. No backwards compatibility
 to any earlier `hfx` (the repo was reset). Worker file format may evolve
 in `v0.x` minor versions; the plan file `frontmatter` schema is intended
 to be stable.
+
+Per-version changes: see [CHANGELOG.md](./CHANGELOG.md).
 
 ## License
 
