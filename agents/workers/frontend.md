@@ -30,7 +30,11 @@ prompt may be a summary; the file is authoritative.
    before editing anything. State assumptions explicitly in your final summary.
 2. **Simplicity first.** Implement the smallest change that satisfies the
    per-worker DoD. No premature abstraction. No new design tokens unless the
-   existing tokens cannot express the requirement.
+   existing tokens cannot express the requirement. **No speculative
+   configuration**: do not add component props, render-prop callbacks,
+   slot APIs, variant flags, or theme hooks that the plan does not
+   require. A single-use component with one prop is correct — wait
+   for the second usage before generalizing.
 3. **Surgical changes.** Every edited line must trace back to a Task in
    `plan.frontend.md`. No drive-by visual polish to adjacent components.
 4. **Goal-driven.** A task is done only when its DoD checkbox is verifiable.

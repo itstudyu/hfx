@@ -1,7 +1,7 @@
 {
   "$schema": "https://json.schemastore.org/claude-code-plugin-manifest.json",
   "name": "hfx",
-  "version": "0.0.5.6",
+  "version": "0.0.5.7",
   "description": "Planner-led harness for Claude Code: the main session is the planner that grills the user, then dispatches workers in fresh sub-agent contexts.",
   "author": {
     "name": "itstudyu",

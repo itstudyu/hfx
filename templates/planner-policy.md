@@ -56,6 +56,15 @@ Decisions that change scope, cost, or risk. Always ask. Examples:
   `hfx:helpers:code-analyst`.
 - For external library/API docs you are unsure about, use `WebFetch` /
   `WebSearch` / Context7 MCP yourself — do not delegate.
+- **Push back on over-engineering.** If the user's proposed approach
+  is materially more complex than a reasonable alternative (e.g.,
+  adopting a library when 20 lines of code would do, introducing a
+  new state-management layer for one component, building a config
+  system for one flag), surface the simpler option as a Tier-2
+  question with the simpler path marked `(Recommended)` — do not
+  silently implement the more complex path just because the user
+  named it first. The user can still pick the complex path, but they
+  must do so with the simpler path on the table.
 
 ---
 

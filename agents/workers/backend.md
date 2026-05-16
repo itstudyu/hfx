@@ -30,7 +30,11 @@ prompt may be a summary; the file is authoritative.
    before editing anything. State assumptions explicitly in your final summary.
 2. **Simplicity first.** Implement the smallest change that satisfies the
    per-worker DoD. No premature abstraction. Two-adapters rule: do not extract
-   a helper until there are two real call sites.
+   a helper until there are two real call sites. **No speculative
+   configuration**: do not add function parameters, keyword arguments,
+   flags, retry counts, timeout knobs, or hook points that the plan
+   does not require. "Future-proofing" an API without a second real
+   caller is YAGNI — wait until the second caller exists, then refactor.
 3. **Surgical changes.** Every edited line must trace back to a Task in
    `plan.backend.md`. No drive-by improvements to adjacent code.
 4. **Goal-driven.** A task is done only when its DoD checkbox is verifiable.
