@@ -61,7 +61,7 @@ Use `AskUserQuestion`:
 
 | header | question                                              | options |
 |--------|-------------------------------------------------------|---------|
-| Apply  | 이 변경을 적용할까요?                                  | [a] apply (Recommended) / [e] edit my request / [r] reject |
+| Apply  | Apply this change?                                    | [a] apply (Recommended) / [e] edit my request / [r] reject |
 
 - `[a] apply` → use `Edit` to apply each diff hunk. Confirm with `ls -l`.
 - `[e] edit my request` → ask the user how to refine the request, then

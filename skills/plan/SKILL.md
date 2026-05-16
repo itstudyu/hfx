@@ -165,7 +165,7 @@ Use `AskUserQuestion` (single):
 
 | header | question                       | options |
 |--------|--------------------------------|---------|
-| Sync   | 이 sync 그대로 진행할까요?      | [a] approve — write plan files (Recommended) / [e] edit sync / [q] I have a question / [r] reject and discard |
+| Sync   | Proceed with this sync as-is?   | [a] approve — write plan files (Recommended) / [e] edit sync / [q] I have a question / [r] reject and discard |
 
 - `[a]` → Step 6.
 - `[e]` → return to Step 4, ask for the specific refinement.
@@ -254,7 +254,7 @@ Show the user the rendered file paths and the **full text** of `plan.md`
 
 | header | question                                  | options |
 |--------|-------------------------------------------|---------|
-| Plan   | Plan 파일들 그대로 승인할까요?              | [a] approve — fill approved_at + content_sha (Recommended) / [e] edit plan files / [q] I have a question |
+| Plan   | Approve the plan files as-is?               | [a] approve — fill approved_at + content_sha (Recommended) / [e] edit plan files / [q] I have a question |
 
 - `[a]` →
    1. Use the `Bash` tool at this point — substitute the actual
@@ -295,8 +295,8 @@ Next: `/hfx:run <actual-ticket-id>`
 
 Then STOP.
 
-**Why no question here:** earlier versions asked "지금 /hfx:run
-실행할까요? [y]/[n]" but `[y]` only prints the exact command for the
+**Why no question here:** earlier versions asked "Run /hfx:run
+now? [y]/[n]" but `[y]` only prints the exact command for the
 user to paste — `/hfx:run` is `disable-model-invocation: true` and
 cannot be auto-invoked. The question added a click without adding
 value: the user types `/hfx:run` either way. A bare `Next:` line is

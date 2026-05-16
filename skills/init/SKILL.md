@@ -37,10 +37,10 @@ Use **one** `AskUserQuestion` call with these four questions:
 
 | header        | question                                                     | multiSelect | options |
 |---------------|--------------------------------------------------------------|-------------|---------|
-| Workers       | 어떤 default worker를 설치할까요?                            | true        | backend / frontend / docupdater |
-| code-analyst  | code-analyst helper(읽기 전용 코드 분석)를 설치할까요?       | false       | yes / no |
-| Policy seed   | planner-policy를 어떻게 시작할까요?                          | false       | default template (Recommended) / blank skeleton |
-| Refs seed     | refs.yaml에 예시 conditional 항목을 포함할까요?              | false       | yes — examples (Recommended) / no — empty conditional |
+| Workers       | Which default workers to install?                            | true        | backend / frontend / docupdater |
+| code-analyst  | Install the code-analyst helper (read-only code analysis)?   | false       | yes / no |
+| Policy seed   | How should planner-policy start?                             | false       | default template (Recommended) / blank skeleton |
+| Refs seed     | Include example conditional entries in refs.yaml?            | false       | yes — examples (Recommended) / no — empty conditional |
 
 Recommended defaults (first option in each): backend+frontend+docupdater
 all selected; code-analyst yes; default policy; examples in refs.
@@ -52,9 +52,9 @@ call (sequentially — at most 3 calls total). Each call asks:
 
 | header  | question                                              | options |
 |---------|-------------------------------------------------------|---------|
-| Model   | 이 worker가 쓸 model?                                 | sonnet (Recommended) / opus / haiku |
-| Refs    | refs.yaml `conditional:`에 추가할 파일 경로 (콤마 분리). 모르면 skip. | <free-form via Other> |
-| Policy  | planner-policy.md에 추가할 한 줄 hint. 모르면 skip.    | <free-form via Other> |
+| Model   | Which model should this worker use?                   | sonnet (Recommended) / opus / haiku |
+| Refs    | File paths to add to refs.yaml `conditional:` (comma-separated). Skip if unsure. | <free-form via Other> |
+| Policy  | One-line hint to add to planner-policy.md. Skip if unsure. | <free-form via Other> |
 
 Capture answers in a small in-memory map keyed by worker name.
 
