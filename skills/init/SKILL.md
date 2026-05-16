@@ -41,9 +41,12 @@ Use **one** `AskUserQuestion` call with these four questions:
 | code-analyst  | Install the code-analyst helper (read-only code analysis)?   | false       | yes / no |
 | Policy seed   | How should planner-policy start?                             | false       | default template (Recommended) / blank skeleton |
 | Refs seed     | Include example conditional entries in refs.yaml?            | false       | yes — examples (Recommended) / no — empty conditional |
+| Language      | What language should plan files and worker reports be written in? | false       | English (Recommended) / 한국어 / 日本語 / Other |
 
 Recommended defaults (first option in each): backend+frontend+docupdater
-all selected; code-analyst yes; default policy; examples in refs.
+all selected; code-analyst yes; default policy; examples in refs;
+English artifact language. For Language → Other, the free-form text is
+passed verbatim to `planner-policy.md` §8.
 
 ## Step 2 — per-worker config
 
@@ -83,11 +86,13 @@ In one block of tool calls (parallel where independent):
 
 2. Read `${CLAUDE_PLUGIN_ROOT}/templates/planner-policy.md`. If user
    picked "default template", `Write` it verbatim to
-   `${CLAUDE_PROJECT_DIR}/.harness/planner-policy.md`, then append any
-   per-worker policy hints from Step 2 under a new `## 8. Per-worker hints`
-   section.
-   If user picked "blank skeleton", write a 10-line stub with only the
-   section headers (no body).
+   `${CLAUDE_PROJECT_DIR}/.harness/planner-policy.md`, then use `Edit`
+   with `replace_all: true` to substitute `<LANG>` with the Step 1
+   Language choice (verbatim, no normalization). Append per-worker
+   policy hints from Step 2 under `## 9. Per-worker hints`.
+
+   If user picked "blank skeleton", write a 10-line stub with section
+   headers only.
 
 3. Read `${CLAUDE_PLUGIN_ROOT}/templates/refs.yaml`. If user picked
    "examples", write it verbatim to `${CLAUDE_PROJECT_DIR}/.harness/refs.yaml`,

@@ -3,6 +3,15 @@
 All notable changes to hfx are documented here. Format follows
 [Keep a Changelog](https://keepachangelog.com/).
 
+## v0.0.5.9 — 2026-05-16
+
+### Added
+- `/hfx:init` asks for the project's artifact language (English,
+  한국어, 日本語, or free-form). The value is written to
+  `.harness/planner-policy.md` §8 and copied into every `plan.md`'s
+  `## Constraints > Technical:` line so workers obey it. Conversation
+  language continues to mirror the user.
+
 ## v0.0.5.8 — 2026-05-16
 
 ### Added

@@ -327,3 +327,16 @@ After `/hfx:run` completes successfully and user accepts results:
 
 Add new entries when you find a doc that should have been auto-loaded.
 Propose this edit at the end of the ticket, in the memory update step.
+
+---
+
+## 8. Language
+
+- Conversation: mirror the user's most recent message.
+- Artifacts: write natural-language sections of `plan.md`,
+  `plan.<worker>.md`, and worker reports in **`<LANG>`**. Section
+  headers, frontmatter keys, status enums, shell commands, and code
+  identifiers stay English.
+- At `/hfx:plan` Step 4, add this line to `plan.md ## Constraints >
+  Technical:` so workers (which don't see this file) obey it too:
+  `Artifact language: <LANG> (natural-language sections only)`.
