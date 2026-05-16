@@ -516,28 +516,51 @@ Show results.md to the user. Use `AskUserQuestion`:
 
 ## Step 7 — memory update proposal (only if Step 6 accepted)
 
-Re-read the worker outputs and propose 0–3 learnings that pass the test
-from `planner-policy.md` §5:
-- Would have saved time on **this** ticket if known beforehand.
-- Non-obvious from the code alone (not findable by grep).
+Re-read the worker outputs and propose 0–3 learnings that pass **all
+three gates** from `planner-policy.md` §5 step 2:
 
-For each candidate, print:
+1. **Saves future time** — would have saved time on this very ticket
+   if known beforehand.
+2. **Non-obvious from code** — would not be found by a `grep` over the
+   project files.
+3. **Permanent, not a workaround** — describes a permanent solution,
+   not a temporary workaround for a bug. If a candidate fails this
+   gate, drop it and suggest the user file a bug ticket instead.
+
+For each surviving candidate, print the exact file that will be
+written, using the structure from `planner-policy.md` §5 step 3:
 
 ```
 Candidate 1: <theme>
   File: .harness/memory/<theme>.md (new | existing)
   Index line: - [<title>](<theme>.md) — <one-line hook>
-  Body:
-  ---
-  <≤10 lines>
-  ---
+  Body (written verbatim — YAML frontmatter + 5-line skeleton):
+
+      ---
+      files:
+        - <repo-relative path>
+      ---
+
+      Problem: <one line>
+      Cause:   <one line>
+      Fix:     <one line>
+      Why:     <one line>
+      When-not-to-apply: <the explicit expiry condition for this learning>
+
   [y]es / [n]o
 ```
+
+The candidate MUST already contain the frontmatter + 5-line skeleton
+when shown to the user — do not show free-form prose and then "fix it
+into the skeleton" after [y]. If you cannot fit the learning into the
+skeleton (especially the `When-not-to-apply:` line), the learning is
+too vague — drop the candidate.
 
 Use `AskUserQuestion` per candidate (or a single multi-select if 2–4).
 
 For each `[y]`:
-- `Edit` (or `Write` if new) `.harness/memory/<theme>.md` with the body.
+- `Edit` (or `Write` if new) `.harness/memory/<theme>.md` with the body
+  exactly as shown.
 - `Edit` `.harness/memory/INDEX.md` to add the index line.
 
 End with a one-line summary of what was saved.

@@ -3,6 +3,13 @@
 This file is loaded by `/hfx:plan` at the start of every planning session.
 Edit it freely to customize how the planner thinks about your project.
 
+> **Memory store:** `.harness/memory/INDEX.md` lists accumulated
+> learnings about this project (one line per theme). The planner
+> auto-consults it during `/hfx:plan` Step 1 — but the file is
+> plain markdown, so any agent (helpers, reviewers, ad-hoc tasks)
+> can also `Read` it when its work suggests project-specific
+> conventions may exist. See §5 for the storage format.
+
 ---
 
 ## 1. Decision tiers
@@ -212,24 +219,67 @@ are wasted reads.
 After `/hfx:run` completes successfully and user accepts results:
 
 1. Read `.harness/memory/INDEX.md`.
-2. Propose 0–3 candidate learnings to add. A learning is worth saving only if:
-   - It would have saved time **on this very ticket** if known beforehand, AND
-   - It is non-obvious from the code alone (i.e., would not be found by grep).
-3. For each candidate, show:
+2. Propose 0–3 candidate learnings to add. A learning is worth saving
+   only if ALL three gates pass:
+   - **Saves future time** — it would have saved time on this very
+     ticket if known beforehand.
+   - **Non-obvious from code** — it would not be found by a `grep` over
+     the project files.
+   - **Permanent, not a workaround** — the fix this learning describes
+     is a permanent solution, not a temporary workaround for a bug. If
+     the learning is "we did X to work around bug Y," the right move is
+     to file a bug ticket — do NOT save it as memory. Workarounds
+     become stale the moment the underlying bug is fixed, at which
+     point the learning lies to future readers.
+3. Each saved learning MUST follow the structure below — both the
+   YAML frontmatter and the 5-line body skeleton are required:
+
+   ```markdown
+   ---
+   files:
+     - <repo-relative path the learning relates to>
+     - <another path, if applicable>
+   ---
+
+   Problem: <one line — what situation does this apply to>
+   Cause:   <one line — why it happens>
+   Fix:     <one line — what to do, concretely>
+   Why:     <one line — why this fix is correct, not just convenient>
+   When-not-to-apply: <one line — the condition under which this
+                       learning becomes obsolete>
+   ```
+
+   Rules for the structure:
+   - Body is **≤10 lines total** after the frontmatter. Long
+     explanations belong in the commit message or an external doc;
+     the learning itself stays compact.
+   - `files:` is a flat YAML list of repo-relative paths. If the
+     learning is not file-specific (e.g., a project-wide convention),
+     use `files: []`. Future tooling globs these to detect stale
+     learnings whose referenced files no longer exist.
+   - `When-not-to-apply:` is the single most important line — the
+     learning declares its own expiry condition. Examples:
+     `When-not-to-apply: when X library is upgraded past v3`,
+     `When-not-to-apply: when the auth refactor in ticket Z lands`,
+     `When-not-to-apply: never — this is a permanent project convention`.
+     If you cannot articulate when the learning becomes obsolete, the
+     learning is probably too vague to save.
+4. For each candidate, show:
    - Proposed file (existing theme or new).
    - One-line summary that will appear in INDEX.md.
-   - The full memory body (≤10 lines).
-4. **Overlap check (deterministic):** grep each candidate's
+   - The full frontmatter + 5-line body as it will be written.
+5. **Overlap check (deterministic):** grep each candidate's
    title-keywords against existing `<theme>.md` files. If any file
    matches, present the user with `[s]upersede / [a]ppend / [n]ew / [skip]`
    instead of plain `[y]/[n]`. Never auto-pick `supersede`.
-5. Ask `[y]es / [n]o` (or the overlap variant) per candidate. Only
+6. Ask `[y]es / [n]o` (or the overlap variant) per candidate. Only
    write what the user confirms.
 
 **Never** save:
 - Code patterns already visible in the repo.
 - Git history facts.
 - One-off fix recipes ("we removed line X to fix Y") — those live in the commit message.
+- Workarounds — file a bug ticket instead (see gate 3 above).
 
 ---
 
