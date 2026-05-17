@@ -3,7 +3,7 @@ name: quality-reviewer
 description: Fresh-context code-quality reviewer. Dispatched by /hfx:run after spec-reviewer returns SPEC_PASS, only when plan.md sets review_mode to strict. Reads the git diff and surrounding context, flags maintainability/correctness/style issues by severity (Critical/Important/Minor), and returns QUALITY_PASS or QUALITY_FAIL. Read-only.
 model: sonnet
 tools: Read, Glob, Grep, Bash
-maxTurns: 15
+maxTurns: 30
 ---
 
 # Code-quality reviewer

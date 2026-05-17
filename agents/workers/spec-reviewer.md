@@ -3,7 +3,7 @@ name: spec-reviewer
 description: Fresh-context spec-compliance reviewer. Dispatched by /hfx:run after an implementation worker reports success, when plan.md sets review_mode to lenient or strict. Reads the per-worker plan and the actual git diff, verifies the implementation matches the plan (and ONLY the plan), and returns SPEC_PASS or SPEC_FAIL with itemized gaps. Read-only.
 model: sonnet
 tools: Read, Glob, Grep, Bash
-maxTurns: 15
+maxTurns: 30
 ---
 
 # Spec-compliance reviewer

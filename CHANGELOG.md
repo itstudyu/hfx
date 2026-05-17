@@ -3,6 +3,28 @@
 All notable changes to hfx are documented here. Format follows
 [Keep a Changelog](https://keepachangelog.com/).
 
+## v0.0.5.13 — 2026-05-17
+
+### Fixed
+- Reviewer `maxTurns` raised 15→30 (spec, quality). Workers get 30
+  turns; reviewers were dying mid-investigation without a verdict.
+- `/hfx:run` Step 4a.2 now treats "no verdict from reviewer" as
+  failed and forbids the main session from performing the review
+  inline. Closes a real self-evaluation incident in
+  2026-05-17-modern-login-page (planner verdicted its own plan as
+  SPEC_PASS after the reviewer twice died at turn limit).
+- `/hfx:run` Step 4 Agent call now explicitly passes
+  `isolation="worktree"` when the worker frontmatter declares it.
+  The frontmatter key alone was not being honored by Claude Code,
+  so all worktree-based safeguards (Step 4.5 hand-off,
+  `handoff-worktree.sh`) were dead code since v0.0.5.4. Confirmed
+  on disk: `.claude/worktrees/` empty and `results.md` self-reported
+  "isolation: worktree が有効化されず".
+- Dispatch prompts now inline the required verdict line
+  (`## Status` for workers, `## Spec review result` for
+  spec-reviewer). The previous "follow your system prompt"
+  reference was insufficient under long tool-use loops.
+
 ## v0.0.5.12 — 2026-05-16
 
 ### Fixed

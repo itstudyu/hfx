@@ -122,6 +122,7 @@ For each level in order:
    ```
    Agent(
      subagent_type="<resolved name>",
+     isolation="worktree",  # only when worker frontmatter has `isolation: worktree`
      description="<step.id> — <one-line>",
      prompt="""
 You are working on ticket <ticket-id>.
@@ -136,8 +137,7 @@ You are working on ticket <ticket-id>.
 
 Ticket directory (absolute): <TICKET_DIR>
 
-Follow the rules in your system prompt. Report back in the exact output
-format specified.
+Follow the rules in your system prompt. Your final message MUST contain a `## Status` line with one of: DONE | DONE_WITH_CONCERNS | BLOCKED | NEEDS_CONTEXT.
 """
    )
    ```
@@ -370,13 +370,14 @@ Project root:     <CLAUDE_PROJECT_DIR>
 BASE_SHA: <step.base_sha>
 HEAD_SHA: <see 4a.1>
 
-Follow your system prompt. Return SPEC_PASS or SPEC_FAIL with itemized findings.
+Follow your system prompt. Your final message MUST start with `## Spec review result` followed by `SPEC_PASS` or `SPEC_FAIL` on the next line. No prose before this header.
 """
 )
 ```
 
 - If `SPEC_PASS` → proceed to 4a.3.
 - If `SPEC_FAIL` → enter the fix loop (4a.4) with the reviewer's findings.
+- If neither verdict line appears → mark `step.outcome = failed`, `step.notes = "reviewer_no_verdict"`. **Never perform the review inline in the main session.**
 
 ### 4a.3 — Dispatch quality-reviewer (only if review_mode == strict)
 
