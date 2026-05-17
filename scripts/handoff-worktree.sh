@@ -142,27 +142,34 @@ is_allowed() {
   return 1
 }
 
-# Collect candidate paths from the worktree via git porcelain. This
-# catches both untracked (`??`) and modified-but-uncommitted (` M`, `M `,
-# `AM`, etc) files. We deliberately skip deletions — copying a delete
-# back is a destructive operation that needs user review.
+# Collect candidate paths. Porcelain enumerates untracked directories
+# as a single entry (`?? src/`), hiding per-file paths from the
+# allow-list. `ls-files --others --exclude-standard` enumerates
+# untracked files per-file (respecting .gitignore); `diff --name-only
+# --diff-filter=ACMR HEAD` catches added/modified/staged/renamed
+# files. For renames, diff emits the destination only — no arrow
+# parsing needed (cleaner than the old porcelain switch).
 candidates=()
-while IFS= read -r line; do
-  # porcelain format: "XY path" where XY is 2-char status.
-  # For renames it's "XY orig -> new"; we keep the destination only.
-  status="${line:0:2}"
-  rest="${line:3}"
-  case "$status" in
-    " D"|"D "|"DD") continue ;;       # deletion — skip
-    "??"|" M"|"M "|"MM"|"AM"|"A "|"MA"|"RM"|"R ") ;;  # accept
-    *) ;;                              # accept anything else by default
-  esac
-  # Handle rename arrow.
-  case "$rest" in
-    *" -> "*) rest="${rest##* -> }" ;;
-  esac
-  candidates+=("$rest")
-done < <(git -C "$worktree_dir" status --porcelain 2>/dev/null || true)
+while IFS= read -r rel; do
+  [ -z "$rel" ] && continue
+  candidates+=("$rel")
+done < <(
+  {
+    git -C "$worktree_dir" ls-files --others --exclude-standard
+    git -C "$worktree_dir" diff --name-only --diff-filter=ACMR HEAD
+  } 2>/dev/null | sort -u
+)
+
+# Track deletions separately so the JSON report names them explicitly.
+# Old script silently filtered deletions via `[ ! -f "$src" ]` at the
+# copy step; that preserved behavior (no delete-propagation) but lost
+# the signal. Workers may legitimately delete files (cleanup); the
+# caller needs to know so it can decide policy.
+deletions=()
+while IFS= read -r rel; do
+  [ -z "$rel" ] && continue
+  deletions+=("$rel")
+done < <(git -C "$worktree_dir" diff --name-only --diff-filter=D HEAD 2>/dev/null)
 
 copied=()
 skipped_same=()
@@ -217,4 +224,5 @@ printf '"copied":';       json_array "${copied[@]+"${copied[@]}"}"
 printf ',"skipped_same":'; json_array "${skipped_same[@]+"${skipped_same[@]}"}"
 printf ',"conflicts":';   json_array "${conflicts[@]+"${conflicts[@]}"}"
 printf ',"out_of_scope":'; json_array "${out_of_scope[@]+"${out_of_scope[@]}"}"
+printf ',"deletions":';   json_array "${deletions[@]+"${deletions[@]}"}"
 printf '}\n'

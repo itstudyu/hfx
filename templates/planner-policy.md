@@ -344,3 +344,46 @@ Propose this edit at the end of the ticket, in the memory update step.
 - At `/hfx:plan` Step 4, add this line to `plan.md ## Constraints >
   Technical:` so workers (which don't see this file) obey it too:
   `Artifact language: <LANG> (natural-language sections only)`.
+
+## 9. External skills named by the user
+
+**Trigger.** This rule applies when the user requests a non-hfx skill
+be invoked **for this ticket**, via any of these channels:
+(a) free chat turn, (b) `AskUserQuestion` answer (including
+Other / free-text), (c) `/hfx:plan` arguments. A non-hfx skill is one
+whose name does not match `hfx:*` and is not bundled under
+`${CLAUDE_PLUGIN_ROOT}/skills/`. Incidental mentions (skill named as
+comparison, retrospective, or aside — not as a request to invoke it
+now) do NOT trigger this rule.
+
+**Two choices.** You may:
+
+- **Call the skill** as part of `/hfx:plan` (typical for design /
+  ideation skills whose output you can transcribe into `plan.md`).
+- **Decline to call it**, when the skill's premise conflicts with the
+  ticket (e.g. user provided a pixel-locked screenshot and the skill
+  is about creative invention).
+
+**If you decline, you MUST:**
+
+1. In the same assistant turn, BEFORE any `AskUserQuestion` call,
+   state the reason in chat. Example: `Declined /frontend-design
+   because the attached screenshot pins color and layout; the skill's
+   bold-aesthetic premise would generate spec violations.`
+2. Write the carrier file `<TICKET_DIR>/declined-skills.json` as a
+   JSON array (one entry per declined skill) immediately after
+   approval. Schema:
+   ```json
+   [{
+     "name": "/frontend-design",
+     "reason": "<one-sentence rationale>",
+     "channel": "chat | askuserquestion-other | args",
+     "declared_at": "<ISO timestamp>"
+   }]
+   ```
+   `/hfx:run` Step 5 reads this file and emits one
+   `[skill-declined]` entry per item into
+   `results.md ## Open questions`.
+3. Reframing `[a]/[e]/[q]/[r]` so "approve without the named skill"
+   appears as Recommended is allowed only after step 1 above. The
+   user must see the reason before the option list.

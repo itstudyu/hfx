@@ -3,6 +3,48 @@
 All notable changes to hfx are documented here. Format follows
 [Keep a Changelog](https://keepachangelog.com/).
 
+## v0.0.5.14 — 2026-05-17
+
+### Fixed
+- `/hfx:run` Step 4 no longer silently treats `## Status`-absent +
+  `## Tasks completed`-present as succeeded — that fallback masked a
+  mid-turn truncation in `2026-05-17-login-page-mock`. New status
+  `needs_attention` requires explicit user acknowledgement at the
+  Step 6 accept gate.
+- `scripts/handoff-worktree.sh` was blind to untracked directories
+  (`ng new` produced `?? src/` porcelain entries the script copied
+  as zero files). Replaced with `ls-files --others --exclude-standard`
+  + `diff --name-only --diff-filter=ACMR HEAD`. Deletions tracked
+  separately and surfaced in the JSON report's new `deletions` field.
+- spec-reviewer and quality-reviewer outputs now persist as
+  `<TICKET_DIR>/{spec,quality}-report.<step>.md` (verbatim markdown,
+  one file each, overwritten on re-run). Previously only
+  security-reviewer had a durable record; spec / quality lived only
+  in `results.md` prose and got summarized away across fix loops.
+
+### Added
+- `/hfx:run` Step 4a.7 documents the user-initiated planner fix flow
+  (previously ad-hoc and undocumented). Two rules: `PostToolUse` hook
+  conflicts on plan-mandated behavior must be recorded but NOT
+  appeased (mirrors worker hard rule #6); planner may only edit
+  files in `step.files_changed` (scope creep escalates to a new
+  ticket).
+- `planner-policy.md §9`: when the user requests a non-hfx skill for
+  this ticket and the planner declines, the planner writes
+  `<TICKET_DIR>/declined-skills.json` as a carrier. `/hfx:run`
+  Step 5 reads it and emits `[skill-declined]` entries in
+  `results.md ## Open questions`. Closes a real case where
+  `/frontend-design` was bypassed without an audit trail.
+
+### Not done (and why)
+- Worker prompts (`frontend.md` / `backend.md` / `docupdater.md`)
+  unchanged. v0.0.5.13 retest defect was mid-turn truncation, not
+  "forgot the format" — detection at the dispatcher layer is the
+  right fix, not an EOF self-check the worker never reaches.
+- `r<round>` suffix on reviewer reports deferred to v0.0.6.
+  v0.0.5 has no auto-fix loop; rounds are user-driven; users can
+  `git mv` to preserve history if needed.
+
 ## v0.0.5.13 — 2026-05-17
 
 ### Fixed

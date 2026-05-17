@@ -151,9 +151,19 @@ Follow the rules in your system prompt. Your final message MUST contain a `## St
    | `BLOCKED` | failed — fail-fast, stop launching new levels |
    | `NEEDS_CONTEXT` | failed — surface the worker's question to user; stay in `active/` |
 
-   **Backward-compat:** if `## Status` is absent (older worker file),
-   fall back to: `## Tasks completed` present → succeeded; otherwise
-   failed.
+   **Missing-verdict handling:** if `## Status` is absent, do NOT
+   silently fall back to "`## Tasks completed` present → succeeded."
+   That fallback masked a mid-turn truncation in
+   `2026-05-17-login-page-mock`. Instead:
+   - Set `step.outcome = needs_attention`.
+   - Set `step.notes = "worker_no_status_verdict"`.
+   - In `results.md`, under the step's section, add a top-line warning:
+     `⚠ Worker did not emit ## Status; planner must verify manually
+     before accepting.`
+   - Continue to Step 4.5 (hand-off) and Step 4a (reviewers) so the
+     work is still inspectable, but Step 6's accept gate refuses
+     `[a]ccept` unless the user explicitly types `accept-no-status`
+     in the Other field.
 
    When a step fails, still wait for in-flight sequential steps in this
    level to finish before moving on (don't kill them mid-run, but don't
@@ -379,6 +389,17 @@ Follow your system prompt. Your final message MUST start with `## Spec review re
 - If `SPEC_FAIL` → enter the fix loop (4a.4) with the reviewer's findings.
 - If neither verdict line appears → mark `step.outcome = failed`, `step.notes = "reviewer_no_verdict"`. **Never perform the review inline in the main session.**
 
+After the reviewer returns (PASS or FAIL), `Write` the reviewer's
+verbatim final-message body (markdown, as emitted — no JSON wrapping)
+to:
+
+  `<TICKET_DIR>/spec-report.<step.id>.md`
+
+If the file already exists (re-run of `/hfx:run` on the same ticket),
+overwrite. `r<round>` suffixes are deferred to v0.0.6 (no auto-fix
+loop in v0.0.5; rounds are user-driven and the user can `git mv` to
+preserve history).
+
 ### 4a.3 — Dispatch quality-reviewer (only if review_mode == strict)
 
 Same dispatch shape as 4a.2 but with `subagent_type` resolving to
@@ -387,6 +408,10 @@ context (so it knows spec is already verified).
 
 - If `QUALITY_PASS` → proceed to 4a.5 (security branch).
 - If `QUALITY_FAIL` → enter the fix loop (4a.4) with the findings.
+
+After the reviewer returns, `Write` the same shape to
+`<TICKET_DIR>/quality-report.<step.id>.md`. Same overwrite rule as
+spec-report.
 
 ### 4a.4 — Review FAIL handling (no auto-fix in v0.0.5)
 
@@ -472,6 +497,36 @@ surfaces the report for the user to inspect.
 If both are `off`, do nothing in Step 4a. Step 4's `step.outcome = succeeded`
 is final. This is the speed-first default path that 80–90% of tickets take.
 
+### 4a.7 — Planner-applied fixes (user-initiated)
+
+If reviewers FAILED and the user picks "apply the fix manually via
+planner" (Step 5 results.md `Next action` option 1), the planner
+applies the edits **in the main project tree** (not in the worker's
+worktree — that may have been cleaned up). This flow is user-initiated
+and explicit; it is NOT auto-fix (Step 4a.4 still holds: the planner
+never re-dispatches workers with reviewer findings on its own).
+
+Two rules govern these edits:
+
+1. **Hook conflicts.** If a `PostToolUse` hook (e.g. user-global
+   `code-quality-check`) blocks an edit that implements a behavior the
+   plan explicitly specifies, the planner does NOT appease the hook.
+   Identification: the tool-result contains hook stderr matching a
+   `~/.claude/settings.json` `hooks.PostToolUse.*.command` name.
+   Bypass test: the flagged code (literal token or behavior) appears
+   verbatim in `plan.<worker>.md ## Tasks` for the failing step.
+   Quote the matching task line when recording the conflict in
+   `results.md ## Open questions`. This mirrors workers' hard rule #6.
+
+2. **Scope.** The planner only touches files in
+   `step.files_changed` (the post-handoff manifest). Touching new
+   files at fix-time is scope creep — escalate to a new ticket
+   instead.
+
+After all fixes are applied, the planner re-runs reviewers (Step 4a.2
+and 4a.3 only — security re-runs only if quality re-passes). spec /
+quality reports are overwritten per 4a.2 / 4a.3 persistence rules.
+
 ## Step 5 — write results.md
 
 After the loop ends (success or fail-fast), `Write` `<TICKET_DIR>/results.md`:
@@ -509,6 +564,12 @@ overall: succeeded | failed
         report: <TICKET_DIR>/security-report.<step.id>.json
 
 **Open questions:**
+<before writing this block, check <TICKET_DIR>/declined-skills.json.
+If the file exists, prepend its contents (one entry per item) as
+`[skill-declined]` entries:
+  [skill-declined] /frontend-design — declined at plan time because
+  <reason>. User confirmed via [a] approve at the planner-policy §9
+  re-frame gate. Channel: <chat|askuserquestion-other|args>.>
 <worker's open questions>
 
 (repeat per step)
